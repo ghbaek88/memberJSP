@@ -1,17 +1,39 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ page import="member.been.ZipcodeDTO"%>   
+<%@ page import="member.dao.MemberDAO"%> 
+<%@ page import="java.util.List"%>
+
+<%
+request.setCharacterEncoding("UTF-8");
+// 데이터
+String sido = request.getParameter("sido");
+String sigungu = request.getParameter("sigungu");
+String roadname = request.getParameter("roadname");
+System.out.println(sido+","+sigungu+","+roadname);
+
+//DB
+List<ZipcodeDTO> list = null;
+if(sido != null && roadname != null){
+	MemberDAO memberDAO = MemberDAO.getInstance();
+	list = memberDAO.getZipcodeList(sido,sigungu,roadname);
+	System.out.println(list.size());
+}
+
+//응답
+%>   
+    
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
 <title>우편 번호</title>
+ <link rel="stylesheet" href="../css/member.css">
 </head>
 <body>
  <form name="chekPost" method="post" action="">
   <table border="1" cellspacing="0" cellpadding="3" align="center">
-  <style type="text/css">
-   th {font-size:8pt; background-color: #ffff00}  
-  </style>  
+  
    <tr>
     <th width="100">시도</th>
     <td>
@@ -50,7 +72,22 @@
     <th colspan="3">주소</th>    
    </tr>   
    
+	<%if(list != null) {%>
+     <%for(ZipcodeDTO zipcodeDTO:list){ 
+     	String address = zipcodeDTO.getSido()+" "
+                +zipcodeDTO.getSigungu()+" "
+				+zipcodeDTO.getYubmyundong()+" "
+                +zipcodeDTO.getRi()+" "
+                +zipcodeDTO.getRoadname()+" "
+				+zipcodeDTO.getBuildingname(); %>
+     <tr>
+        <td align="center"><%=zipcodeDTO.getZipcode() %></a></td>
+        <td colspan=3><a id="addressA" href="#" onclick="checkPostClose('<%=zipcodeDTO.getZipcode()%>','<%=address%>')"><%=address %></a></td>
+     </tr>
+     <%} %>
+ 	<%} %>	
   </table>
  </form>
 </body>
+<script type="text/javascript" src="../js/member.js"></script>
 </html>

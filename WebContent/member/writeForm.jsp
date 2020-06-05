@@ -10,12 +10,15 @@
 <head>
 <meta charset="UTF-8">
 <title>회원가입</title>
+  <style type="text/css">
+   td {background:dodgerblue}  
+  </style>  
 </head>
 <body>
 <h3 align="center">회원가입</h3>
  <form name="writeForm" method="post" action="">
   <table border="1" cellspacing="0" cellpadding="3" align="center">
-  
+
    <tr>
     <td width="100" align="center"><font color="red"> * </font> 이름 </td>
     <td><input type="text" size="15" name="name" id="name" placeholder="이름입력"></td>
@@ -78,11 +81,11 @@
     <tr> 
     <td colspan="2" align="center">
 	<input type="button" onclick="checkWriteForm()" value="회원가입"> &emsp; 
-	<input type="reset" value="다시입력"> </td> <!-- 어느 페이지로 이동하기 위에 사용하기 위한것은 submit이다. 하지만 현재 페이지의 데이터를 가지고 이동한다. -->
+	<input type="reset" value="다시입력"> </td>
   </tr>
   
   </table>
  </form>
 </body>
-<script type="text/javascript" src="../js/member.js"></script> <!-- 상대 번지이다 -->
+<script type="text/javascript" src="../js/member.js"></script> 
 </html>
