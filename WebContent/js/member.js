@@ -60,6 +60,8 @@ function overlapCheck(){
 function checkPostClose(zipcode, address){
 	opener.document.getElementById("zipcode").value = zipcode;
 	opener.document.getElementById("addr1").value = address;
+	//opener.document.forms[0].zipcode.value = zipcode;
+	//opener.document.forms[0].add1.value = address;
 	window.close();
 	opener.document.getElementById("addr2").value = "";
 	opener.document.getElementById("addr2").focus();
@@ -84,3 +86,4 @@ function checkModifyForm(){
     	document.modifyForm.submit();
     } 
  }
+

@@ -16,7 +16,7 @@
 </head>
 <body>
 <h3 align="center">회원가입</h3>
- <form name="writeForm" method="post" action="">
+ <form name="writeForm" method="post" action="write.jsp">
   <table border="1" cellspacing="0" cellpadding="3" align="center">
 
    <tr>

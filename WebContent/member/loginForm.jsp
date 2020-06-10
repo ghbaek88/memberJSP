@@ -4,7 +4,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>로그인 폼</title>
+<title>Login Form Screen</title>
   <style type="text/css">
    td {background:dodgerblue}  
   </style>  

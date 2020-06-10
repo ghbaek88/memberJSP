@@ -1,12 +1,13 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ page import="member.dao.MemberDAO"%>
-<%@page import="member.been.MemberDTO"%>
-<%@page import="java.util.List"%>
+<%@	page import="member.been.MemberDTO"%>
+<%@	page import="java.util.List"%>
     
 <%
 // 데이터
-String id = request.getParameter("id");
+//String id = request.getParameter("id");
+String id = (String)session.getAttribute("memId");
 
 //DB
 MemberDAO memberDAO = MemberDAO.getInstance();
@@ -98,8 +99,7 @@ MemberDTO memberDTO = memberDAO.modifyMember(id);
 </body>
 <script type="text/javascript" src="../js/member.js"></script>
 <script type="text/javascript">
-window.onload = function () {
-	
+window.onload = function () {	
 	<!-- 성별 라디오 받아오기 -->	
   	if("<%=memberDTO.getGender() %>" == "0"){
 		document.getElementById("man").checked = true;
@@ -109,13 +109,10 @@ window.onload = function () {
    		<!-- document.modifyForm.gender[1].checked = true; -->
    	}  	
   	<!-- 이메일 받아오기 -->
-  	if("<%=memberDTO.getEmail2() %>" != ""){
   		document.getElementById("email2").value = "<%=memberDTO.getEmail2()%>";
-  	}
+  		
   	<!-- 전화번호 받아오기 -->
-	if("<%=memberDTO.getTel1() %>" != ""){
   		document.getElementById("tel1").value = "<%=memberDTO.getTel1()%>";
-  	}
 }   
 </script>
 </html>
