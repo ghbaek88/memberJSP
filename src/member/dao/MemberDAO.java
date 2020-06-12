@@ -8,40 +8,32 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
+
 import member.been.MemberDTO;
 import member.been.ZipcodeDTO;
 
 public class MemberDAO {
     private static MemberDAO instance; // 싱글톤이라는 티를 팍팍 낸다.
     
-	private String driver = "oracle.jdbc.driver.OracleDriver";
-	private String url = "jdbc:oracle:thin:@localhost:1521:xe";
-	private String userName = "c##java";
-	private String password = "bit";
-	
 	private Connection conn;
 	private PreparedStatement pstmt;
-	private ResultSet rs;		
+	private ResultSet rs;	
+	private DataSource ds;
    
     public MemberDAO() {
-    	// 드라이버로딩
+    	Context ctx;
 		try {
-			Class.forName(driver);
-			System.out.println("드라이버 로딩 성공!");
-		} catch (ClassNotFoundException e) {
+			ctx = new InitialContext();
+			ds = (DataSource)ctx.lookup("java:comp/env/jdbc/oracle");
+			//ds = (DataSource)ctx.lookup("jdbc/oracle"); 톰캣이 아닌경우에는 이렇게 써도됨
+		} catch (NamingException e) {
 			e.printStackTrace();
-		} 	
-	} // 생성자
-    
-    // 오라클 접속하기
-	public void getConnection() {
-		try {
-			conn = DriverManager.getConnection(url, userName, password);
-			System.out.println("오라클 접속 성공!");
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}		
-	}// getConnection()
+		}
+	}
     
     public static MemberDAO getInstance() { 
     	if(instance == null) {
@@ -55,10 +47,13 @@ public class MemberDAO {
     
     public boolean isExistId(String id) {
     	boolean exist = false;
-    	getConnection();
+    	
+
     	//String sql = "select count(*) as count from member where id=?";
     	String sql = "select * from member where id=?";
     	try {
+    		conn = ds.getConnection(); // 오라클 접속
+    		
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, id);
 			
@@ -69,12 +64,9 @@ public class MemberDAO {
 			e.printStackTrace();
 		} finally {
 			try {
-				if (rs != null)
-					rs.close();
-				if (pstmt != null)
-					pstmt.close();
-				if (conn != null)
-					conn.close();
+				if (rs != null) rs.close();
+				if (pstmt != null) pstmt.close();
+				if (conn != null) conn.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -84,9 +76,11 @@ public class MemberDAO {
     
     public int writeMember(MemberDTO memberDTO) {
 		int su = 0;
-		getConnection(); // 오라클 접속
+
 		String sql = "insert into member values(?,?,?,?,?,?,?,?,?,?,?,?,sysdate)";
-		try {
+		try {			
+			conn = ds.getConnection(); // 오라클 접속
+			
 			pstmt = conn.prepareStatement(sql);
 
 			pstmt.setString(1, memberDTO.getName());
@@ -122,11 +116,13 @@ public class MemberDAO {
     public List<ZipcodeDTO> getZipcodeList(String sido, String sigungu, String roadname){
     	List<ZipcodeDTO> list = new ArrayList<ZipcodeDTO>();
     	System.out.println(sido+","+sigungu+","+roadname);
-    	getConnection();
+   
     	String sql = "select * from newzipcode where sido like ? and (sigungu like ? or sigungu is null) and roadname like ? ";
     	//String sql = "select * from newzipcode where sido like ? and nvl(sigungu,'0') like ? and roadname like ?";
     	
     	try {
+    		conn = ds.getConnection(); // 오라클 접속
+    		
 			pstmt = conn.prepareStatement(sql);
 			
 			pstmt.setString(1, "%"+sido+"%");
@@ -160,12 +156,9 @@ public class MemberDAO {
 			list = null;
 		} finally {
 			try {
-				if (rs != null)
-					rs.close();
-				if (pstmt != null)
-					pstmt.close();
-				if (conn != null)
-					conn.close();
+				if (rs != null) rs.close();
+				if (pstmt != null) pstmt.close();
+				if (conn != null) conn.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -174,10 +167,13 @@ public class MemberDAO {
     }
     public MemberDTO loginMember(String id, String pwd){
     	MemberDTO memberDTO = null;	
-		getConnection();
+
 		String sql = "select * from member where id=? and pwd=?";
 		try {
+			conn = ds.getConnection(); // 오라클 접속
+			
 			pstmt = conn.prepareStatement(sql);
+			
 			pstmt.setString(1, id);
 			pstmt.setString(2, pwd);
 			
@@ -216,10 +212,12 @@ public class MemberDAO {
     public MemberDTO modifyMember(String id) {
     	MemberDTO memberDTO = null;
     	//List<MemberDTO> list = new ArrayList<MemberDTO>();
-    	getConnection();
     	String sql = "select * from member where id=?";
 		try {
+			conn = ds.getConnection(); // 오라클 접속
+			
 			pstmt = conn.prepareStatement(sql);
+			
 			pstmt.setString(1, id);
 			
 			rs = pstmt.executeQuery(); // 실행
@@ -246,12 +244,9 @@ public class MemberDAO {
 			memberDTO = null;
 		} finally {
 			try {
-				if (rs != null)
-					rs.close();
-				if (pstmt != null)
-					pstmt.close();
-				if (conn != null)
-					conn.close();
+				if (rs != null) rs.close();
+				if (pstmt != null) pstmt.close();
+				if (conn != null) conn.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -262,7 +257,7 @@ public class MemberDAO {
     
     public int modifyMemberUpdate(MemberDTO memberDTO) {
     	int su = 0;
-    	getConnection();
+
     	String sql = "update member set name=?,"
     								+ " pwd=?,"
     								+ " gender=?,"
@@ -278,6 +273,8 @@ public class MemberDAO {
     								+ " where id=?";
     	
     	try {
+    		conn = ds.getConnection(); // 오라클 접속
+    		
 			pstmt = conn.prepareStatement(sql);
 			
 			pstmt.setString(1, memberDTO.getName());
